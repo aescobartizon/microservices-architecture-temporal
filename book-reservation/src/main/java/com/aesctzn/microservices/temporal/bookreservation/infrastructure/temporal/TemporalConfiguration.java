@@ -89,6 +89,7 @@ public class TemporalConfiguration {
         }
         checkTemporalConnection(service);
         return service;
+
     }
 
     private WorkflowServiceStubsOptions mapWorkflowServiceStubsOptions(TemporalConnectionProperties temporalProperties) throws SSLException {

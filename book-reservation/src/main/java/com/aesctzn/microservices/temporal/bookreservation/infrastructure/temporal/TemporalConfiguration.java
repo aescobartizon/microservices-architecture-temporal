@@ -25,12 +25,12 @@ import java.time.Duration;
 public class TemporalConfiguration {
 
 
+
     /** WorkflowClient
      * Es una clase proporcionada por la biblioteca de cliente de Temporal que se utiliza para interactuar
      * con el servicio de Temporal.
      *
      * Esencialmente, actúa como una factoría para crear instancias de clientes de flujo de trabajo (WorkflowStub)
-     * y clientes de actividad (ActivityStub)
      */
     @Bean
     public WorkflowClient getWorkflowClient(WorkflowServiceStubs workflowServiceStubs){
@@ -50,11 +50,10 @@ public class TemporalConfiguration {
 
     /** WorkerFactory
      * Es una clase proporcionada por la biblioteca de cliente de Temporal que se utiliza para crear y gestionar instancias de workers de Temporal.
-     * Son responsables de escuchar y procesar tareas relacionadas con flujos de trabajo y actividades. Por ejemplo, un trabajador puede escuchar
-     * una cola de tareas y ejecutar flujos de trabajo o actividades cuando se envían nuevas tareas a la cola.
+     * Son responsables de crear una instancia de un worker asociado a una cola y la instancia del worker permite registrar Workflows y actividades
      *
-     *WorkerFactory simplifica la configuración y gestión de workers en una aplicación de Temporal.
-     * Proporciona métodos para crear y configurar trabajadores, así como para iniciar y detener su ejecución.
+     * WorkerFactory simplifica la configuración y gestión de workers en una aplicación de Temporal.
+     * Proporciona métodos para crear y configurar workers, así como para iniciar y detener su ejecución.
      */
     @Bean
     public WorkerFactory getWorkerFactory(WorkflowClient workflowClient){
@@ -68,12 +67,10 @@ public class TemporalConfiguration {
     }
 
     /** WorkflowServiceStubs
-     * Es una clase proporcionada por la biblioteca de cliente de Temporal que se utiliza para crear clientes de servicio de Temporal.
+     * Es una clase proporcionada por la biblioteca de cliente de Temporal que se utiliza para crear WorkflowClient de Temporal.
      * Estos clientes se utilizan para interactuar con el servidor de Temporal para iniciar, consultar y gestionar flujos de trabajo y actividades.
      *
-     * En esencia, WorkflowServiceStubs actúa como una factoría para crear instancias de clientes de servicio de Temporal.
-     * Proporciona métodos para crear clientes de flujo de trabajo (WorkflowStub) y clientes de actividad (ActivityStub),
-     * que se utilizan para enviar solicitudes al servidor de Temporal y recibir respuestas.*/
+     * En esencia, WorkflowServiceStubs configura la conexión con Temporal y permite crear WorkflowClient.*/
 
     @Bean
     public WorkflowServiceStubs getWorkflowServiceStubs(TemporalConnectionProperties temporalProperties) throws SSLException {
@@ -105,7 +102,7 @@ public class TemporalConfiguration {
         //builder.setChannel(channel.build());
 
         /**
-         * Al configurar el rpcLongPollTimeout, estás especificando cuánto tiempo debe mantenerse abierta la llamada RPC de long-polling
+         * Configuración GRPC, se está especificando cuánto tiempo debe mantenerse abierta la llamada RPC de long-polling
          * antes de que se cierre automáticamente si no se recibe una respuesta del servidor. Este tiempo de espera ayuda a evitar
          * que la llamada RPC se bloquee indefinidamente si el servidor no responde o si la respuesta tarda más de lo esperado
          * builder.setRpcLongPollTimeout(Duration.ofSeconds(1));*/

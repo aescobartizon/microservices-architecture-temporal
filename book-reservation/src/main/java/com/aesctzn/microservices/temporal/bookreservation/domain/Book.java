@@ -8,8 +8,10 @@ import lombok.Setter;
 @Data
 @Getter
 @Setter
-@AllArgsConstructor
 public class Book {
+    public Book (){
+
+    }
     private Long id;
     private String title;
     private String author;

@@ -27,18 +27,11 @@ public class ReservationController {
 
     @PostMapping("/reserve")
     public ResponseEntity<String> reserveBook(@RequestBody Reservation request) {
-        Book book = findBookById(request.getBook().getId());
-        if (book != null) {
-            return ResponseEntity.ok("Book reserved successfully");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book not found");
-        }
+        reservationService.doReservation(request);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Reserva realizada para libro +"+request.getBook().getTitle());
     }
 
     private Book findBookById(Long bookId) {
-        // Lógica para buscar un libro por ID
-        // Aquí podrías consultar una base de datos o un servicio externo
-        // Por simplicidad, retornaremos un libro ficticio
-        return new Book(1L, "Spring Boot in Action", "Craig Walls");
+        return new Book();
     }
 }

@@ -6,6 +6,9 @@ import java.time.LocalDate;
 
 @Data
 public class Reservation {
+    public Reservation(){
+
+    }
     private Book book;
     private LocalDate reservationDate;
 }

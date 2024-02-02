@@ -1,14 +1,71 @@
 package com.aesctzn.microservices.temporal.bookreservation.application;
 
-import lombok.AllArgsConstructor;
+import com.aesctzn.microservices.temporal.bookreservation.domain.Reservation;
+import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.ReservationsWorkflow;
+import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.ReservationsWorkflowTemporal;
+import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.WorkflowResult;
+import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.activities.DeductStockActivityImpl;
+import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.activities.PayReservationActivityImpl;
+import io.temporal.api.enums.v1.WorkflowIdReusePolicy;
+import io.temporal.client.WorkflowClient;
+import io.temporal.client.WorkflowOptions;
+import io.temporal.common.RetryOptions;
+import io.temporal.worker.Worker;
+import io.temporal.worker.WorkerFactory;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-@AllArgsConstructor
+import java.time.Duration;
+
 @Service
+@Slf4j
 public class ReservationsService implements Reservations {
 
-    private ManagementBookPay managementBookPayService;
-    private ManagementBookStock managementBookStock;
+    private static final String TASK_QUEUE = "booksReservations";
+    @Autowired
+    private WorkerFactory workerFactory;
+    @Autowired
+    private WorkflowClient workflowClient;
+    private WorkflowOptions build;
+
+    @PostConstruct
+    public void initTemporalIntegration(){
+        Worker reservationsWorkflowWorker = workerFactory.newWorker(TASK_QUEUE);
+        reservationsWorkflowWorker.registerWorkflowImplementationTypes(ReservationsWorkflowTemporal.class);
+        reservationsWorkflowWorker.registerActivitiesImplementations(new DeductStockActivityImpl(), new PayReservationActivityImpl());
+        workerFactory.start();
+    }
 
 
+    @Override
+    @Async
+    public void doReservation(Reservation reservation) {
+
+        WorkflowOptions workflowOptions = WorkflowOptions.newBuilder()
+                .setTaskQueue(TASK_QUEUE)
+                .setWorkflowId(reservation.getBook().getTitle())
+                //.setWorkflowIdReusePolicy(WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE)
+                //.setWorkflowIdReusePolicy(WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_REJECT_DUPLICATE)
+                //.setWorkflowIdReusePolicy(WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE_FAILED_ONLY)
+                //.setWorkflowIdReusePolicy(WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_TERMINATE_IF_RUNNING)
+                //.setWorkflowRunTimeout(Duration.ofMinutes(3))
+                //.setWorkflowRunTimeout(Duration.ofMinutes(2))
+                //.setRetryOptions(RetryOptions.newBuilder()
+                //        .setBackoffCoefficient(2)
+                //        .setInitialInterval(Duration.ofSeconds(10))
+                //        .setMaximumAttempts(3)
+                //        .setMaximumInterval(Duration.ofSeconds(10))
+                //                .build()
+                //                )
+                .build();
+
+
+        ReservationsWorkflow workflow = workflowClient.newWorkflowStub(ReservationsWorkflow.class,workflowOptions);
+        WorkflowResult result = workflow.doReservation(reservation);
+        log.info(result.getSummary()); ;
+
+    }
 }

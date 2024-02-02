@@ -29,9 +29,16 @@ public class ReservationsWorkflowTemporal implements ReservationsWorkflow {
 
     private boolean running = false;
 
+    private String titulo;
+    private ActivityResult resultDeductStock;
+
 
     @Override
     public WorkflowResult doReservation(Reservation reservation) {
+
+        titulo = reservation.getBook().getTitle();
+
+        log.info("Ejecutando WF Reserva de libro "+ reservation.getBook().getTitle());
 
         ActivityResult resultDeductStock = deductStockActivity.deductStock(reservation.getBook());
 

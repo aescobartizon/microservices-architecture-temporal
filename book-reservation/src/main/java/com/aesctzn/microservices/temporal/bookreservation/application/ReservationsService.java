@@ -47,19 +47,23 @@ public class ReservationsService implements Reservations {
         WorkflowOptions workflowOptions = WorkflowOptions.newBuilder()
                 .setTaskQueue(TASK_QUEUE)
                 .setWorkflowId(reservation.getBook().getTitle())
-                //.setWorkflowIdReusePolicy(WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE)
+                //WORKFLOW_ID_REUSE_POLICY//
+                .setWorkflowIdReusePolicy(WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE)
                 //.setWorkflowIdReusePolicy(WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_REJECT_DUPLICATE)
                 //.setWorkflowIdReusePolicy(WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE_FAILED_ONLY)
                 //.setWorkflowIdReusePolicy(WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_TERMINATE_IF_RUNNING)
-                //.setWorkflowRunTimeout(Duration.ofMinutes(3))
-                //.setWorkflowRunTimeout(Duration.ofMinutes(2))
-                //.setRetryOptions(RetryOptions.newBuilder()
-                //        .setBackoffCoefficient(2)
-                //        .setInitialInterval(Duration.ofSeconds(10))
-                //        .setMaximumAttempts(3)
-                //        .setMaximumInterval(Duration.ofSeconds(10))
-                //                .build()
-                //                )
+
+                //TIME OUT//
+                .setWorkflowRunTimeout(Duration.ofSeconds(15))
+                .setWorkflowRunTimeout(Duration.ofSeconds(5))
+                //POLITICA DE REINTENTOS//
+                .setRetryOptions(RetryOptions.newBuilder()
+                        .setBackoffCoefficient(2)
+                        .setInitialInterval(Duration.ofSeconds(2))
+                        .setMaximumAttempts(3)
+                        .setMaximumInterval(Duration.ofSeconds(10))
+                               .build()
+                )
                 .build();
 
 

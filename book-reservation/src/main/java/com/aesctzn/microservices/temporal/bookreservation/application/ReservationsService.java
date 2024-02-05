@@ -79,4 +79,10 @@ public class ReservationsService implements Reservations {
         ReservationsWorkflow workflowById = workflowClient.newWorkflowStub(ReservationsWorkflow.class, notification.getReservation().getBook().getTitle());
         workflowById.sendNotification(notification);
     }
+
+    @Override
+    public Reservation getReservationInfo(String bookTitle) {
+        ReservationsWorkflow workflowById = workflowClient.newWorkflowStub(ReservationsWorkflow.class, bookTitle);
+        return workflowById.getReservationInfo();
+    }
 }

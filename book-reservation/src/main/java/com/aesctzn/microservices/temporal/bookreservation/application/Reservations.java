@@ -8,4 +8,6 @@ public interface Reservations {
     void doReservation(Reservation reservations);
 
     void sendNotification(SignalNotifications notification);
+
+    Reservation getReservationInfo(String bookTitle);
 }

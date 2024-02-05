@@ -38,6 +38,11 @@ public class ReservationController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Notificación enviada para usuario y libro +"+notification.getReservation().getBook().getTitle());
     }
 
+    @GetMapping("/info")
+    public ResponseEntity<Reservation> getReservationInfo(@RequestParam("bookTitle") String bookTitle){
+        return ResponseEntity.status(HttpStatus.OK).body(reservationService.getReservationInfo(bookTitle));
+    }
+
     private Book findBookById(Long bookId) {
         return new Book();
     }

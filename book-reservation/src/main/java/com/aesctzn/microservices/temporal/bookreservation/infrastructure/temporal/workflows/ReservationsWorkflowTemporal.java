@@ -54,6 +54,9 @@ public class ReservationsWorkflowTemporal implements ReservationsWorkflow {
 
         result.setSummary(result.getSummary()+" Reserva confirmada "+payReservationResult.getSummary());
 
+        //Parcial Status para consulta
+        reservation.setStatus("PAY Complete. Waiting for Notification");
+
         //Esperamos a señal de servicio externo envíe una notificación
         Workflow.await(()->signalNotifications.isSendNotification());
 
@@ -63,6 +66,9 @@ public class ReservationsWorkflowTemporal implements ReservationsWorkflow {
         }else{
             log.info("Envío completado con metodo alternativo");
         }
+
+        //Actualizacion del estado de la reserva para posterior consulta
+        reservation.setStatus("PAY Complete. Notification Complete");
 
         return result;
     }

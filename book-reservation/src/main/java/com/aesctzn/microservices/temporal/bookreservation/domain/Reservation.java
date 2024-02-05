@@ -11,4 +11,5 @@ public class Reservation {
     }
     private Book book;
     private LocalDate reservationDate;
+    private String userName;
 }

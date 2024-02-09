@@ -2,7 +2,9 @@ package com.aesctzn.microservices.temporal.bookreservation.infrastructure.tempor
 
 import com.aesctzn.microservices.temporal.bookreservation.domain.Reservation;
 import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.activities.*;
+import io.temporal.activity.ActivityOptions;
 import io.temporal.activity.LocalActivityOptions;
+import io.temporal.common.RetryOptions;
 import io.temporal.workflow.Workflow;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,10 +13,16 @@ import java.time.Duration;
 public class ReservationsWorkflowTemporal implements ReservationsWorkflow {
 
     private final DeductStockActivity deductStockActivity =
-            Workflow.newLocalActivityStub(
+            Workflow.newActivityStub(
                     DeductStockActivity.class,
-                    LocalActivityOptions.newBuilder()
-                            .setStartToCloseTimeout(Duration.ofSeconds(2))
+                    ActivityOptions.newBuilder()
+                            .setStartToCloseTimeout(Duration.ofSeconds(60))
+                            .setRetryOptions(RetryOptions.newBuilder()
+                                    .setInitialInterval(Duration.ofSeconds(5)) // Intervalo inicial entre reintentos
+                                    .setMaximumAttempts(3) // Número máximo de reintentos
+                                    .setDoNotRetry(String.valueOf(IllegalArgumentException.class)) // No volver a intentar para excepciones específicas
+                                    .build())
+                            .setHeartbeatTimeout(Duration.ofSeconds(5))
                             .build());
 
     private final PayReservationActivity payReservationActivity=
@@ -22,6 +30,11 @@ public class ReservationsWorkflowTemporal implements ReservationsWorkflow {
                     PayReservationActivity.class,
                     LocalActivityOptions.newBuilder()
                             .setStartToCloseTimeout(Duration.ofSeconds(2))
+                            .setRetryOptions(RetryOptions.newBuilder()
+                                    .setInitialInterval(Duration.ofSeconds(5)) // Intervalo inicial entre reintentos
+                                    .setMaximumAttempts(3) // Número máximo de reintentos
+                                    .setDoNotRetry(String.valueOf(IllegalArgumentException.class)) // No volver a intentar para excepciones específicas
+                                    .build())
                             .build());
 
 
@@ -58,7 +71,7 @@ public class ReservationsWorkflowTemporal implements ReservationsWorkflow {
         reservation.setStatus("PAY Complete. Waiting for Notification");
 
         //Esperamos a señal de servicio externo envíe una notificación
-        Workflow.await(()->signalNotifications.isSendNotification());
+        //Workflow.await(()->signalNotifications.isSendNotification());
 
         //En funcion de la notificación podemos
         if(signalNotifications.getSeviceName().equals("EMAIL")){

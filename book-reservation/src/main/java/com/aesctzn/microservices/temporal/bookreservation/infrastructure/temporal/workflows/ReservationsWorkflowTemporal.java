@@ -17,6 +17,8 @@ public class ReservationsWorkflowTemporal implements ReservationsWorkflow {
                     DeductStockActivity.class,
                     ActivityOptions.newBuilder()
                             .setStartToCloseTimeout(Duration.ofSeconds(60))
+                            .setScheduleToCloseTimeout(Duration.ofSeconds(50))
+                            .setScheduleToStartTimeout(Duration.ofSeconds(15))
                             .setRetryOptions(RetryOptions.newBuilder()
                                     .setInitialInterval(Duration.ofSeconds(5)) // Intervalo inicial entre reintentos
                                     .setMaximumAttempts(3) // Número máximo de reintentos
@@ -28,8 +30,8 @@ public class ReservationsWorkflowTemporal implements ReservationsWorkflow {
     private final PayReservationActivity payReservationActivity=
             Workflow.newLocalActivityStub(
                     PayReservationActivity.class,
-                    LocalActivityOptions.newBuilder()
-                            .setStartToCloseTimeout(Duration.ofSeconds(2))
+                    LocalActivityOptions.newBuilder() .setStartToCloseTimeout(Duration.ofSeconds(2))
+                            .setStartToCloseTimeout(Duration.ofHours(5))
                             .setRetryOptions(RetryOptions.newBuilder()
                                     .setInitialInterval(Duration.ofSeconds(5)) // Intervalo inicial entre reintentos
                                     .setMaximumAttempts(3) // Número máximo de reintentos
@@ -51,7 +53,7 @@ public class ReservationsWorkflowTemporal implements ReservationsWorkflow {
 
 
     @Override
-    public WorkflowResult doReservation(Reservation reservation) {
+    public WorkflowResult doReservation(Reservation reservation)  {
 
         this.reservationInfo = reservation;
 

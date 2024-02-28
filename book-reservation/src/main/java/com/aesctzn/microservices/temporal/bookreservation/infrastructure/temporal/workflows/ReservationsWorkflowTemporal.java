@@ -4,8 +4,10 @@ import com.aesctzn.microservices.temporal.bookreservation.domain.Reservation;
 import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.activities.*;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.activity.LocalActivityOptions;
+import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.common.RetryOptions;
 import io.temporal.workflow.Workflow;
+import io.temporal.workflow.WorkflowInfo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
@@ -16,8 +18,8 @@ public class ReservationsWorkflowTemporal implements ReservationsWorkflow {
             Workflow.newActivityStub(
                     DeductStockActivity.class,
                     ActivityOptions.newBuilder()
-                            .setStartToCloseTimeout(Duration.ofSeconds(60))
-                            .setScheduleToCloseTimeout(Duration.ofSeconds(50))
+                            .setStartToCloseTimeout(Duration.ofSeconds(8))
+                            .setScheduleToCloseTimeout(Duration.ofSeconds(60))
                             .setScheduleToStartTimeout(Duration.ofSeconds(15))
                             .setRetryOptions(RetryOptions.newBuilder()
                                     .setInitialInterval(Duration.ofSeconds(5)) // Intervalo inicial entre reintentos
@@ -28,10 +30,10 @@ public class ReservationsWorkflowTemporal implements ReservationsWorkflow {
                             .build());
 
     private final PayReservationActivity payReservationActivity=
-            Workflow.newLocalActivityStub(
+            Workflow.newActivityStub(
                     PayReservationActivity.class,
-                    LocalActivityOptions.newBuilder() .setStartToCloseTimeout(Duration.ofSeconds(2))
-                            .setStartToCloseTimeout(Duration.ofHours(5))
+                    ActivityOptions.newBuilder() .setStartToCloseTimeout(Duration.ofSeconds(2))
+                            .setStartToCloseTimeout(Duration.ofSeconds(10))
                             .setRetryOptions(RetryOptions.newBuilder()
                                     .setInitialInterval(Duration.ofSeconds(5)) // Intervalo inicial entre reintentos
                                     .setMaximumAttempts(3) // Número máximo de reintentos

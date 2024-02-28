@@ -7,19 +7,24 @@ import com.aesctzn.microservices.temporal.bookreservation.infrastructure.tempora
 import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.WorkflowResult;
 import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.activities.DeductStockActivityImpl;
 import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.activities.PayReservationActivityImpl;
+import io.temporal.api.common.v1.Payload;
 import io.temporal.api.enums.v1.WorkflowIdReusePolicy;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.common.RetryOptions;
+import io.temporal.common.context.ContextPropagator;
+import io.temporal.common.converter.DataConverter;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -45,9 +50,13 @@ public class ReservationsService implements Reservations {
     @Async
     public void doReservation(Reservation reservation) {
 
+        MDC.put("X-Authorization","Bearer:1232323324423423423");
+
         WorkflowOptions workflowOptions = WorkflowOptions.newBuilder()
                 .setTaskQueue(TASK_QUEUE)
                 .setWorkflowId(reservation.getBook().getTitle())
+                //Propagacion de Contexto
+                .setContextPropagators(Collections.singletonList(new MDCContextPropagator()))
                 //WORKFLOW_ID_REUSE_POLICY//
                 .setWorkflowIdReusePolicy(WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE)
                 //.setWorkflowIdReusePolicy(WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_REJECT_DUPLICATE)
@@ -72,6 +81,47 @@ public class ReservationsService implements Reservations {
         WorkflowResult result = workflow.doReservation(reservation);
         log.info(result.getSummary()); ;
 
+    }
+
+
+    public class MDCContextPropagator implements ContextPropagator {
+        public String getName() {
+            return this.getClass().getName();
+        }
+
+        public Object getCurrentContext() {
+            Map<String, String> context = new HashMap<>();
+            for (Map.Entry<String, String> entry : MDC.getCopyOfContextMap().entrySet()) {
+                if (entry.getKey().startsWith("X-")) {
+                    context.put(entry.getKey(), entry.getValue());
+                }
+            }
+            return context;
+        }
+
+        public void setCurrentContext(Object context) {
+            Map<String, String> contextMap = (Map<String, String>) context;
+            for (Map.Entry<String, String> entry : contextMap.entrySet()) {
+                MDC.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        public Map<String, Payload> serializeContext(Object context) {
+            Map<String, String> contextMap = (Map<String, String>) context;
+            Map<String, Payload> serializedContext = new HashMap<>();
+            for (Map.Entry<String, String> entry : contextMap.entrySet()) {
+                serializedContext.put(entry.getKey(), DataConverter.getDefaultInstance().toPayload(entry.getValue()).get());
+            }
+            return serializedContext;
+        }
+
+        public Object deserializeContext(Map<String, Payload> context) {
+            Map<String, String> contextMap = new HashMap<>();
+            for (Map.Entry<String, Payload> entry : context.entrySet()) {
+                contextMap.put(entry.getKey(), DataConverter.getDefaultInstance().fromPayload(entry.getValue(), String.class, String.class));
+            }
+            return contextMap;
+        }
     }
 
     @Override

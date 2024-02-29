@@ -23,7 +23,7 @@ public class DeductStockActivityImpl implements DeductStockActivity {
             for (int i = 0; i < 3; i++) {
                 // Realiza algún trabajo
                 log.info("Simulacion de carga de trabajo");
-                Thread.sleep(3000);
+                Thread.sleep(100);
                 // Envía un latido cada segundo para indicar progreso
                 Activity.getExecutionContext().heartbeat("Procesando elemento " + i);
                 log.info("Enviando Heartbeat");

@@ -6,11 +6,17 @@ import io.temporal.activity.ActivityOptions;
 import io.temporal.activity.LocalActivityOptions;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.common.RetryOptions;
+import io.temporal.workflow.Async;
+import io.temporal.workflow.Promise;
 import io.temporal.workflow.Workflow;
 import io.temporal.workflow.WorkflowInfo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 @Slf4j
 public class ReservationsWorkflowTemporal implements ReservationsWorkflow {
 
@@ -33,6 +39,18 @@ public class ReservationsWorkflowTemporal implements ReservationsWorkflow {
             Workflow.newActivityStub(
                     PayReservationActivity.class,
                     ActivityOptions.newBuilder() .setStartToCloseTimeout(Duration.ofSeconds(2))
+                            .setStartToCloseTimeout(Duration.ofSeconds(10))
+                            .setRetryOptions(RetryOptions.newBuilder()
+                                    .setInitialInterval(Duration.ofSeconds(5)) // Intervalo inicial entre reintentos
+                                    .setMaximumAttempts(3) // Número máximo de reintentos
+                                    .setDoNotRetry(String.valueOf(IllegalArgumentException.class)) // No volver a intentar para excepciones específicas
+                                    .build())
+                            .build());
+
+    private final NotificationsActivity notificationsActivity=
+            Workflow.newActivityStub(
+                    NotificationsActivity.class,
+                    ActivityOptions.newBuilder()
                             .setStartToCloseTimeout(Duration.ofSeconds(10))
                             .setRetryOptions(RetryOptions.newBuilder()
                                     .setInitialInterval(Duration.ofSeconds(5)) // Intervalo inicial entre reintentos
@@ -86,6 +104,16 @@ public class ReservationsWorkflowTemporal implements ReservationsWorkflow {
 
         //Actualizacion del estado de la reserva para posterior consulta
         reservation.setStatus("PAY Complete. Notification Complete");
+
+        //Ejecución paralela de actitidades
+        List<String> notifications = Arrays.asList("Antonio","Jose","Pepe","Luis","Ricardo","Andres","Gema","Pilar","Clara");
+        List<Promise<String>> promiseList = new ArrayList<>();
+        notifications.stream().forEach(p -> promiseList.add(Async.function(notificationsActivity::sendNotifications,"Hola "+p)));
+
+        //Ejecución de todas las tareas concurrentes y esperar a que teminen
+        Promise.allOf(promiseList).get();
+
+        promiseList.stream().forEach(p -> log.info("Imprimiendo resultado de las notificaciones"));
 
         return result;
     }

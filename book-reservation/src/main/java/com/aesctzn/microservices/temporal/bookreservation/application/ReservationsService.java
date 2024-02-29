@@ -1,6 +1,7 @@
 package com.aesctzn.microservices.temporal.bookreservation.application;
 
 import com.aesctzn.microservices.temporal.bookreservation.domain.Reservation;
+import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.activities.NotificationsActivityImpl;
 import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.ReservationsWorkflow;
 import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.ReservationsWorkflowTemporal;
 import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.SignalNotifications;
@@ -41,7 +42,7 @@ public class ReservationsService implements Reservations {
     public void initTemporalIntegration(){
         Worker reservationsWorkflowWorker = workerFactory.newWorker(TASK_QUEUE);
         reservationsWorkflowWorker.registerWorkflowImplementationTypes(ReservationsWorkflowTemporal.class);
-        reservationsWorkflowWorker.registerActivitiesImplementations(new DeductStockActivityImpl(), new PayReservationActivityImpl());
+        reservationsWorkflowWorker.registerActivitiesImplementations(new DeductStockActivityImpl(), new PayReservationActivityImpl(), new NotificationsActivityImpl());
         workerFactory.start();
     }
 

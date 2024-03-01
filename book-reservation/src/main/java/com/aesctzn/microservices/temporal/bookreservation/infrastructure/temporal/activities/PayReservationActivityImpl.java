@@ -13,14 +13,16 @@ public class PayReservationActivityImpl implements  PayReservationActivity {
         Activity.getExecutionContext().useLocalManualCompletion();
         ActivityResult activityResult = new ActivityResult();
         if(reservation.getBook().getId() == 15) {
+
             //No se puede gestionar con try catch dentro de las actividades
-            //try {
+            try {
                 log.info("Finalizar con Fail en caso código de libro");
+                throw  new RuntimeException();
+            } catch (Exception e){
+                log.info("Error controlado por try catch");
                 Activity.getExecutionContext().useLocalManualCompletion().fail(new RuntimeException("El código del libro es invalido"));
                 Activity.getExecutionContext().useLocalManualCompletion().reportCancellation("Cancelado Reserva ya realizada para el código");
-            //} catch (Exception e){
-            //    log.info("Error controlado por try catch");
-            //}
+            }
         }else {
             log.info("Pago Realizado para la reserva del libro : " + reservation.getBook().getTitle());
             activityResult.setSummary("Pago realizado para el libro : " + reservation.getBook().getTitle());

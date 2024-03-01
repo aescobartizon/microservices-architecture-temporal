@@ -115,6 +115,10 @@ public class ReservationsWorkflowTemporal implements ReservationsWorkflow {
 
         promiseList.stream().forEach(p -> log.info("Imprimiendo resultado de las notificaciones"));
 
+        //Ejecución secuencia de tareas3
+        //notifications.stream().forEach(p->notificationsActivity.sendNotifications(p));
+
+
         return result;
     }
 

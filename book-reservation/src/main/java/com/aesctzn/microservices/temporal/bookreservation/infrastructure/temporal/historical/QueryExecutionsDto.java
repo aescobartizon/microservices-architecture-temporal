@@ -9,4 +9,5 @@ public class QueryExecutionsDto {
 
     private String name;
     private String query;
+    private String workflowId;
 }

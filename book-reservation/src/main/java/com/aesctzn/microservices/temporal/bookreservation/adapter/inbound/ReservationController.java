@@ -83,6 +83,11 @@ public class ReservationController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(historicalService.getExecutionsResponse(queryExecutionsDto).toString());
     }
 
+    @PostMapping("/executionsHistoricalList")
+    public ResponseEntity<String> executionHistoricalList(@RequestBody QueryExecutionsDto queryExecutionsDto) {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(historicalService.getHistoryExecutionsResponse(queryExecutionsDto).toString());
+    }
+
     private Book findBookById(Long bookId) {
         return new Book();
     }

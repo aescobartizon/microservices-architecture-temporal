@@ -34,7 +34,7 @@ public class TemporalConfiguration {
      */
     @Bean
     public WorkflowClient getWorkflowClient(WorkflowServiceStubs workflowServiceStubs){
-        WorkflowClientOptions workflowClientOptions = WorkflowClientOptions.getDefaultInstance();
+        //WorkflowClientOptions workflowClientOptions = WorkflowClientOptions.getDefaultInstance();
         //WorkflowClientOptions options = WorkflowClientOptions.newBuilder()
         //        .setNamespace("exampleNamespace") // Establecer el espacio de nombres (namespace) para el cliente
         //        .setInterceptors(myCustomInterceptor) // Establecer interceptores personalizados
@@ -44,6 +44,9 @@ public class TemporalConfiguration {
         //        .setRpcTimeout(Duration.ofSeconds(30)) // Establecer tiempo de espera para RPC
         //        .setChannelShutdownTimeout(Duration.ofSeconds(5)) // Establecer tiempo de espera para el cierre del canal
         //        .build();
+        WorkflowClientOptions workflowClientOptions = WorkflowClientOptions.newBuilder()
+               .setNamespace("test")
+                .build();
         return WorkflowClient.newInstance(workflowServiceStubs,workflowClientOptions);
     }
 

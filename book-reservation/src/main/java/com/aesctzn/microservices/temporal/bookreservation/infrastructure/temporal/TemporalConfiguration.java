@@ -46,7 +46,7 @@ public class TemporalConfiguration {
         //        .build();
         WorkflowClientOptions workflowClientOptions = WorkflowClientOptions.newBuilder()
                .setNamespace("test")
-                .build();
+               .build();
         return WorkflowClient.newInstance(workflowServiceStubs,workflowClientOptions);
     }
 

@@ -12,6 +12,12 @@ public class PayReservationActivityImpl implements  PayReservationActivity {
         //No se marcará a complete de forma automática
         Activity.getExecutionContext().useLocalManualCompletion();
         ActivityResult activityResult = new ActivityResult();
+        log.info("Inicializando pago");
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         if(reservation.getBook().getId() == 15) {
 
             //No se puede gestionar con try catch dentro de las actividades

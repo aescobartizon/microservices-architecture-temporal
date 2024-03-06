@@ -71,7 +71,7 @@ public class ReservationsService implements Reservations {
                 .setRetryOptions(RetryOptions.newBuilder()
                         .setBackoffCoefficient(2)
                         .setInitialInterval(Duration.ofSeconds(2))
-                        .setMaximumAttempts(1)
+                        .setMaximumAttempts(3)
                         .setMaximumInterval(Duration.ofSeconds(10))
                                .build()
                 )

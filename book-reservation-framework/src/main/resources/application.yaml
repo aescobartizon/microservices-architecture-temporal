@@ -1,0 +1,17 @@
+server:
+  port: 8090
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+spring:
+  # temporal specific configs
+  temporal:
+    namespace: default
+    connection:
+      target: 127.0.0.1:7233
+    workersAutoDiscovery:
+      packages: com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal

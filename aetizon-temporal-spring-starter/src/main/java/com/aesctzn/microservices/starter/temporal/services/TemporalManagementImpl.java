@@ -11,6 +11,7 @@ import io.temporal.common.RetryOptions;
 import io.temporal.common.context.ContextPropagator;
 import io.temporal.common.converter.DataConverter;
 import io.temporal.serviceclient.WorkflowServiceStubs;
+import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ public class TemporalManagementImpl implements TemporalManagement {
     @Autowired
     private WorkflowClient workflowClient;
 
+    private Map<String,Worker> workers = new HashMap<>();
+
+    @Override
     public WorkflowOptions getWorkflowOptions(String taskQueue, String workflowId) {
         return  WorkflowOptions.newBuilder()
                 .setTaskQueue(taskQueue)
@@ -60,6 +64,24 @@ public class TemporalManagementImpl implements TemporalManagement {
                         .build()
                 )
                 .build();
+    }
+
+    @Override
+    public Worker getWorker(String taskQueue){
+        if (!workers.containsKey(taskQueue)){
+            workers.put(taskQueue,workerFactory.newWorker(taskQueue));
+        }
+        return workers.get(taskQueue);
+    }
+
+    @Override
+    public WorkflowClient getWorkflowClient(){
+        return workflowClient;
+    }
+
+    @Override
+    public WorkerFactory getWorkerFactory(){
+        return workerFactory;
     }
 
 }

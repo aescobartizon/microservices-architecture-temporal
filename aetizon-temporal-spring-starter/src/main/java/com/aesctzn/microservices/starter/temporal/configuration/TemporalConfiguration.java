@@ -9,6 +9,7 @@ import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -28,6 +29,7 @@ public class TemporalConfiguration {
      * Esencialmente, actúa como una factoría para crear instancias de clientes de flujo de trabajo (WorkflowStub)
      */
     @Bean
+    @ConditionalOnMissingBean
     public WorkflowClient getWorkflowClient(WorkflowServiceStubs workflowServiceStubs){
         //WorkflowClientOptions workflowClientOptions = WorkflowClientOptions.getDefaultInstance();
         //WorkflowClientOptions options = WorkflowClientOptions.newBuilder()
@@ -54,6 +56,7 @@ public class TemporalConfiguration {
      * Proporciona métodos para crear y configurar workers, así como para iniciar y detener su ejecución.
      */
     @Bean
+    @ConditionalOnMissingBean
     public WorkerFactory getWorkerFactory(WorkflowClient workflowClient){
         WorkerFactoryOptions workerFactoryOptions = WorkerFactoryOptions.getDefaultInstance();
         //WorkerFactoryOptions options = WorkerFactoryOptions.newBuilder()
@@ -71,6 +74,7 @@ public class TemporalConfiguration {
      * En esencia, WorkflowServiceStubs configura la conexión con Temporal y permite crear WorkflowClient.*/
 
     @Bean
+    @ConditionalOnMissingBean
     public WorkflowServiceStubs getWorkflowServiceStubs(TemporalConnectionProperties temporalProperties) throws SSLException {
         WorkflowServiceStubs service;
 

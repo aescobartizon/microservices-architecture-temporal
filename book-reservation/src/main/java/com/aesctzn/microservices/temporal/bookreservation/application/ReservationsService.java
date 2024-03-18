@@ -2,13 +2,11 @@ package com.aesctzn.microservices.temporal.bookreservation.application;
 
 import com.aesctzn.microservices.starter.temporal.interfaces.TemporalManagement;
 import com.aesctzn.microservices.temporal.bookreservation.domain.Reservation;
-import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.activities.NotificationsActivityImpl;
+import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.activities.*;
 import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.ReservationsWorkflow;
 import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.ReservationsWorkflowTemporal;
 import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.SignalNotifications;
 import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.WorkflowResult;
-import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.activities.DeductStockActivityImpl;
-import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.activities.PayReservationActivityImpl;
 import io.temporal.api.common.v1.Payload;
 import io.temporal.api.enums.v1.WorkflowIdReusePolicy;
 import io.temporal.client.WorkflowClient;
@@ -33,21 +31,24 @@ import java.util.*;
 public class ReservationsService implements Reservations {
 
     private static final String TASK_QUEUE = "booksReservations";
-    @Autowired
-    private WorkerFactory workerFactory;
-    @Autowired
-    private WorkflowClient workflowClient;
-    private WorkflowOptions build;
 
     @Autowired
     private TemporalManagement temporalManagement;
 
+    @Autowired
+    DeductStockActivity deductStockActivity;
+
+    @Autowired
+    NotificationsActivity notificationsActivity;
+
+    @Autowired
+    PayReservationActivity payReservationActivity;
+
     @PostConstruct
     public void initTemporalIntegration(){
-        Worker reservationsWorkflowWorker = workerFactory.newWorker(TASK_QUEUE);
-        reservationsWorkflowWorker.registerWorkflowImplementationTypes(ReservationsWorkflowTemporal.class);
-        reservationsWorkflowWorker.registerActivitiesImplementations(new DeductStockActivityImpl(), new PayReservationActivityImpl(), new NotificationsActivityImpl());
-        workerFactory.start();
+        temporalManagement.getWorker(TASK_QUEUE).registerWorkflowImplementationTypes(ReservationsWorkflowTemporal.class);
+        temporalManagement.getWorker(TASK_QUEUE).registerActivitiesImplementations(deductStockActivity, payReservationActivity, notificationsActivity);
+        temporalManagement.getWorkerFactory().start();
     }
 
 
@@ -55,7 +56,7 @@ public class ReservationsService implements Reservations {
     @Async
     public void doReservation(Reservation reservation) {
 
-        ReservationsWorkflow workflow = workflowClient.newWorkflowStub(ReservationsWorkflow.class,temporalManagement.getWorkflowOptions(TASK_QUEUE,reservation.getBook().getTitle()));
+        ReservationsWorkflow workflow = temporalManagement.getWorkflowClient().newWorkflowStub(ReservationsWorkflow.class,temporalManagement.getWorkflowOptions(TASK_QUEUE,reservation.getBook().getTitle()));
         WorkflowResult result = workflow.doReservation(reservation);
         log.info(result.getSummary()); ;
 
@@ -66,13 +67,13 @@ public class ReservationsService implements Reservations {
 
     @Override
     public void sendNotification(SignalNotifications notification) {
-        ReservationsWorkflow workflowById = workflowClient.newWorkflowStub(ReservationsWorkflow.class, notification.getReservation().getBook().getTitle());
+        ReservationsWorkflow workflowById = temporalManagement.getWorkflowClient().newWorkflowStub(ReservationsWorkflow.class, notification.getReservation().getBook().getTitle());
         workflowById.sendNotification(notification);
     }
 
     @Override
     public Reservation getReservationInfo(String bookTitle) {
-        ReservationsWorkflow workflowById = workflowClient.newWorkflowStub(ReservationsWorkflow.class, bookTitle);
+        ReservationsWorkflow workflowById = temporalManagement.getWorkflowClient().newWorkflowStub(ReservationsWorkflow.class, bookTitle);
         return workflowById.getReservationInfo();
     }
 }

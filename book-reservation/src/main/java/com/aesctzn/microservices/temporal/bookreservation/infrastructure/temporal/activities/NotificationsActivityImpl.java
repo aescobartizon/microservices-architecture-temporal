@@ -1,7 +1,9 @@
 package com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.activities;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
+@Service
 @Slf4j
 public class NotificationsActivityImpl implements  NotificationsActivity {
     @Override

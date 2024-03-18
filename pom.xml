@@ -44,6 +44,7 @@
     <modules>
         <module>microservices-parent-pom</module>
         <module>book-reservation</module>
+        <module>aetizon-temporal-spring-starter</module>
         <module>book-reservation-framework</module>
         <module>book-stock</module>
         <module>book-pay</module>

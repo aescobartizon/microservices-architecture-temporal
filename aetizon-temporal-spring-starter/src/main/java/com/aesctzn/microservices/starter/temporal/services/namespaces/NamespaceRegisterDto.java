@@ -1,4 +1,4 @@
-package com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.namespaces;
+package com.aesctzn.microservices.starter.temporal.services.namespaces;
 
 import lombok.Getter;
 import lombok.Setter;

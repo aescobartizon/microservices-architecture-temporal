@@ -1,10 +1,6 @@
-package com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal;
+package com.aesctzn.microservices.starter.temporal.configuration;
 
 
-import com.uber.m3.tally.Scope;
-import io.grpc.ManagedChannelBuilder;
-import io.grpc.netty.shaded.io.netty.handler.ssl.SslContext;
-import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.serviceclient.RpcRetryOptions;
@@ -17,7 +13,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.net.ssl.SSLException;
-import java.io.File;
 import java.time.Duration;
 
 @Configuration

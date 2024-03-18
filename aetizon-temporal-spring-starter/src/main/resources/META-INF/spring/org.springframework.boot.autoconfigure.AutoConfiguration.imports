@@ -1,0 +1,5 @@
+com.aesctzn.microservices.starter.temporal.configuration.TemporalConfiguration
+com.aesctzn.microservices.starter.temporal.configuration.TemporalConnectionProperties
+com.aesctzn.microservices.starter.temporal.services.namespaces.NamespaceManagement
+com.aesctzn.microservices.starter.temporal.services.historical.HistoricalService
+com.aesctzn.microservices.starter.temporal.services.TemporalManagementImpl

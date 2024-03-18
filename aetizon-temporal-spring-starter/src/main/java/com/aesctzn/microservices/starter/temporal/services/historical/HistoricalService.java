@@ -1,4 +1,4 @@
-package com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.historical;
+package com.aesctzn.microservices.starter.temporal.services.historical;
 
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.workflowservice.v1.GetWorkflowExecutionHistoryRequest;

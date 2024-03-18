@@ -1,4 +1,4 @@
-package com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.historical;
+package com.aesctzn.microservices.starter.temporal.services.historical;
 
 import lombok.Getter;
 import lombok.Setter;

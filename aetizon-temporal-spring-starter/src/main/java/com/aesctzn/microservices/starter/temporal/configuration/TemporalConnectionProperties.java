@@ -1,4 +1,4 @@
-package com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal;
+package com.aesctzn.microservices.starter.temporal.configuration;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

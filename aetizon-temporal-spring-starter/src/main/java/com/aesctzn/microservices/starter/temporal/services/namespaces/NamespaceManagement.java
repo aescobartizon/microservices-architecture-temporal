@@ -1,15 +1,10 @@
-package com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.namespaces;
+package com.aesctzn.microservices.starter.temporal.services.namespaces;
 
 
-import com.google.protobuf.Duration;
 import com.google.protobuf.util.Durations;
 import io.temporal.api.enums.v1.ArchivalState;
 import io.temporal.api.namespace.v1.NamespaceConfig;
-import io.temporal.api.operatorservice.v1.DeleteNamespaceRequest;
-import io.temporal.api.operatorservice.v1.DeleteNamespaceResponse;
 import io.temporal.api.workflowservice.v1.*;
-import io.temporal.serviceclient.OperatorServiceStubs;
-import io.temporal.serviceclient.OperatorServiceStubsOptions;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

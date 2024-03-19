@@ -17,4 +17,6 @@ class BookReservationApplicationTests {
 	@Test
 	void contextLoads() {
 
+	}
+
 }

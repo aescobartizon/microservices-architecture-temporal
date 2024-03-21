@@ -8,4 +8,7 @@ import io.temporal.activity.ActivityMethod;
 public interface DeductStockActivity {
     @ActivityMethod
     ActivityResult deductStock(Book book);
+
+    @ActivityMethod
+    void compensateStock(Book book);
 }

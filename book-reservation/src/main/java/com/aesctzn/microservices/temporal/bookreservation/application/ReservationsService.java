@@ -3,10 +3,7 @@ package com.aesctzn.microservices.temporal.bookreservation.application;
 import com.aesctzn.microservices.starter.temporal.interfaces.TemporalManagement;
 import com.aesctzn.microservices.temporal.bookreservation.domain.Reservation;
 import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.activities.*;
-import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.ReservationsWorkflow;
-import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.ReservationsWorkflowTemporal;
-import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.SignalNotifications;
-import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.WorkflowResult;
+import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.*;
 import io.temporal.api.common.v1.Payload;
 import io.temporal.api.enums.v1.WorkflowIdReusePolicy;
 import io.temporal.client.WorkflowClient;
@@ -46,7 +43,7 @@ public class ReservationsService implements Reservations {
 
     @PostConstruct
     public void initTemporalIntegration(){
-        temporalManagement.getWorker(TASK_QUEUE).registerWorkflowImplementationTypes(ReservationsWorkflowTemporal.class);
+        temporalManagement.getWorker(TASK_QUEUE).registerWorkflowImplementationTypes(ReservationsWorkflowTemporalSaga.class);
         temporalManagement.getWorker(TASK_QUEUE).registerActivitiesImplementations(deductStockActivity, payReservationActivity, notificationsActivity);
         temporalManagement.getWorkerFactory().start();
     }

@@ -38,4 +38,9 @@ public class DeductStockActivityImpl implements DeductStockActivity {
 
         return activityResult;
     }
+
+    @Override
+    public void compensateStock(Book book) {
+        log.info("Ejecutando compensacion de deducción de stock de libro : "+book.getTitle());
+    }
 }

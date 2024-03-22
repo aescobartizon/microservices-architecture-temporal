@@ -42,7 +42,7 @@ public class TemporalConfiguration {
         //        .setChannelShutdownTimeout(Duration.ofSeconds(5)) // Establecer tiempo de espera para el cierre del canal
         //        .build();
         WorkflowClientOptions workflowClientOptions = WorkflowClientOptions.newBuilder()
-               .setNamespace("test")
+               .setNamespace("default")
                .build();
         return WorkflowClient.newInstance(workflowServiceStubs,workflowClientOptions);
     }

@@ -13,6 +13,11 @@ public class LotCreationActivityImpl implements  LotCreationActivity {
     @Override
     public List<Reservation> doLots() {
         log.info("Realizando particiones");
+        try {
+            Thread.sleep(20000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         return new ArrayList<>();
     }
 }

@@ -1,14 +1,10 @@
 package com.aesctzn.microservices.temporal.bookreservation.application;
 
 import com.aesctzn.microservices.starter.temporal.interfaces.TemporalManagement;
-import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.activities.LotCreationActivity;
-import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.ReservationsWorkflowTemporalSaga;
 import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.SchedulerReservationsBillingWorkflow;
-import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.SchedulerReservationsBillingWorkflowImpl;
 import io.temporal.api.enums.v1.ScheduleOverlapPolicy;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.schedules.*;
-import io.temporal.serviceclient.WorkflowServiceStubs;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,8 +71,8 @@ public class ReservationSchedulerService {
     }
 
     private void updateScheduleTigger() {
-        handle.trigger(ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_ALLOW_ALL);
 
+        handle.trigger(ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_ALLOW_ALL);
         // Update the schedule with a spec, so it will run periodically
         handle.update(
                 (ScheduleUpdateInput input) -> {
@@ -85,15 +81,15 @@ public class ReservationSchedulerService {
                     builder.setSpec(
                             ScheduleSpec.newBuilder()
                                     // Run the schedule at 5pm on Friday
-                                    //.setCalendars(
-                                    //        Collections.singletonList(
-                                    //                ScheduleCalendarSpec.newBuilder()
-                                    //                        .setHour(Collections.singletonList(new ScheduleRange(17)))
-                                    //                        .setDayOfWeek(Collections.singletonList(new ScheduleRange(5)))
-                                    //                        .build()))
+                                    .setCalendars(
+                                            Collections.singletonList(
+                                                    ScheduleCalendarSpec.newBuilder()
+                                                            .setHour(Collections.singletonList(new ScheduleRange(17)))
+                                                            .setDayOfWeek(Collections.singletonList(new ScheduleRange(5)))
+                                                            .build()))
                                     // Run the schedule every 20s
                                     .setIntervals(
-                                            Collections.singletonList(new ScheduleIntervalSpec(Duration.ofSeconds(20))))
+                                            Collections.singletonList(new ScheduleIntervalSpec(Duration.ofSeconds(10))))
                                     .build());
                     // Make the schedule paused to demonstrate how to unpause a schedule
                     builder.setState(

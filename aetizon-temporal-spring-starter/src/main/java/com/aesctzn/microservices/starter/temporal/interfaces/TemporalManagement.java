@@ -1,5 +1,6 @@
 package com.aesctzn.microservices.starter.temporal.interfaces;
 
+import com.aesctzn.microservices.starter.temporal.services.historical.HistoricalService;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.worker.Worker;
@@ -14,4 +15,6 @@ public interface TemporalManagement {
     WorkflowClient getWorkflowClient();
 
     WorkerFactory getWorkerFactory();
+
+    HistoricalService getHistoricalService();
 }

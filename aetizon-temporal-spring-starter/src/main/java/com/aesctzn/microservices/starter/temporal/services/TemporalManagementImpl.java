@@ -13,6 +13,7 @@ import io.temporal.common.converter.DataConverter;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
+import lombok.Getter;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class TemporalManagementImpl implements TemporalManagement {
     private NamespaceManagement namespaceManagement;
 
     @Autowired
+    @Getter
     HistoricalService historicalService;
 
     @Autowired

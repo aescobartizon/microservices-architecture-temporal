@@ -7,6 +7,9 @@ import com.aesctzn.microservices.temporal.bookreservation.infrastructure.tempora
 import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.activities.PayReservationActivity;
 import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.ReservationsWorkflowTemporalSaga;
 import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.SchedulerReservationsBillingWorkflowImpl;
+import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.childs.ReservationProcessActivity;
+import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.childs.ReservationProcessWorkflow;
+import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.childs.ReservationProcessWorkflowImpl;
 import io.temporal.client.schedules.ScheduleClient;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import jakarta.annotation.PostConstruct;
@@ -37,6 +40,9 @@ public class WorkFlowsRegister {
     @Autowired
     PayReservationActivity payReservationActivity;
 
+    @Autowired
+    ReservationProcessActivity reservationProcessActivity;
+
     @Bean
     public ScheduleClient initTemporalIntegration(){
         temporalManagement.getWorker(TASK_QUEUE).registerWorkflowImplementationTypes(ReservationsWorkflowTemporalSaga.class);
@@ -44,6 +50,9 @@ public class WorkFlowsRegister {
 
         temporalManagement.getWorker(TASK_QUEUE).registerWorkflowImplementationTypes(SchedulerReservationsBillingWorkflowImpl.class);
         temporalManagement.getWorker(TASK_QUEUE).registerActivitiesImplementations(lotCreationActivity);
+
+        temporalManagement.getWorker(TASK_QUEUE).registerWorkflowImplementationTypes(ReservationProcessWorkflowImpl.class);
+        temporalManagement.getWorker(TASK_QUEUE).registerActivitiesImplementations(reservationProcessActivity);
 
         temporalManagement.getWorkerFactory().start();
 

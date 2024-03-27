@@ -1,15 +1,19 @@
 package com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows;
 
-import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.activities.DeductStockActivity;
+import com.aesctzn.microservices.temporal.bookreservation.domain.Reservation;
 import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.activities.LotCreationActivity;
+import com.aesctzn.microservices.temporal.bookreservation.infrastructure.temporal.workflows.childs.ReservationProcessWorkflow;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
+import io.temporal.workflow.Async;
+import io.temporal.workflow.ChildWorkflowOptions;
+import io.temporal.workflow.Promise;
 import io.temporal.workflow.Workflow;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
 import java.time.Duration;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 public class SchedulerReservationsBillingWorkflowImpl implements  SchedulerReservationsBillingWorkflow {
 
@@ -30,7 +34,22 @@ public class SchedulerReservationsBillingWorkflowImpl implements  SchedulerReser
     @Override
     public WorkflowResult doBilling(String initDate) {
         log.info("Inicializando Scheduler Workflow ");
-        lotCreationActivity.doLots();
+        List<Reservation> reservations = lotCreationActivity.doLots();
+        List<Promise<Void>> results = new ArrayList<>(reservations.size());
+
+        for (Reservation reserva : reservations) {
+            // Uses human friendly child id.
+            String childId = Workflow.getInfo().getWorkflowId() + "/" + reserva.getBook().getTitle();
+            ReservationProcessWorkflow processor =
+                    Workflow.newChildWorkflowStub(
+                            ReservationProcessWorkflow.class,
+                            ChildWorkflowOptions.newBuilder().setWorkflowId(childId).build());
+            Promise<Void> result = Async.procedure(processor::processReserve, reserva);
+            results.add(result);
+        }
+
+        Promise.allOf(results).get();
+
         log.info("Finalizando Scheduler Workflow ");
         return new WorkflowResult();
     }

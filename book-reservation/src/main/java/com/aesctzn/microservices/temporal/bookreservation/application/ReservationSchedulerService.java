@@ -62,7 +62,7 @@ public class ReservationSchedulerService {
 
         }catch (Exception e){
             log.info("Scheduler Registrado en el sistema");
-            handle = scheduleClient.getHandle("HelloSchedule");
+            handle = scheduleClient.getHandle(SCHEDULE_ID);
             log.info(handle.describe().toString());
             updateScheduleTigger();
         }
@@ -72,7 +72,7 @@ public class ReservationSchedulerService {
 
     private void updateScheduleTigger() {
 
-        handle.trigger(ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_ALLOW_ALL);
+        handle.trigger(ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_TERMINATE_OTHER);
         // Update the schedule with a spec, so it will run periodically
         handle.update(
                 (ScheduleUpdateInput input) -> {
@@ -89,7 +89,7 @@ public class ReservationSchedulerService {
                                                             .build()))
                                     // Run the schedule every 20s
                                     .setIntervals(
-                                            Collections.singletonList(new ScheduleIntervalSpec(Duration.ofSeconds(10))))
+                                            Collections.singletonList(new ScheduleIntervalSpec(Duration.ofSeconds(30))))
                                     .build());
                     // Make the schedule paused to demonstrate how to unpause a schedule
                     builder.setState(

@@ -3,3 +3,6 @@
 /book-reservation/mvnw
 /book-reservation/mvnw.cmd
 /.idea/
+/book-reservation-framework/target/*
+/aetizon-temporal-spring-starter/target/*
+
